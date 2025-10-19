@@ -4,6 +4,14 @@ import { prisma } from "../../../config/db";
 import { Request } from "express";
 import uploadToCloudinary from "../../utils/cloudinary";
 
+const getAllUsers = async () => {
+  const result = await prisma.user.findMany();
+
+  const totalUser = await prisma.user.count();
+
+  return { data: result, meta: { total: totalUser } };
+};
+
 const createPatient = async (req: Request) => {
   const {
     patient: { name, email },
@@ -40,4 +48,9 @@ const createPatient = async (req: Request) => {
   return result;
 };
 
-export const userService = { createPatient };
+const getAllPatients = async () => {
+  const result = await prisma.patient.findMany();
+  return result;
+};
+
+export const userService = { createPatient, getAllPatients, getAllUsers };
