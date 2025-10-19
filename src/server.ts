@@ -1,6 +1,7 @@
 import { Server } from "http";
 import app from "./app";
 import config from "./config";
+import connectDB from "./config/db";
 
 async function bootstrap() {
   // This variable will hold our server instance
@@ -11,7 +12,6 @@ async function bootstrap() {
     server = app.listen(config.port, () => {
       console.log(`🚀 Server is running on http://localhost:${config.port}`);
     });
-
     // Function to gracefully shut down the server
     const exitHandler = () => {
       if (server) {
@@ -44,4 +44,7 @@ async function bootstrap() {
   }
 }
 
-bootstrap();
+(async () => {
+  bootstrap();
+  await connectDB();
+})();
