@@ -4,7 +4,9 @@ import { userService } from "./user.service";
 import sendResponse from "../../shared/sendResponse";
 
 const getAllUsers = catchAsync(async (req: Request, res: Response) => {
-  const result = await userService.getAllUsers();
+  const result = await userService.getAllUsers(
+    req.query as Record<string, any>
+  );
   sendResponse(res, {
     statusCode: 200,
     success: true,

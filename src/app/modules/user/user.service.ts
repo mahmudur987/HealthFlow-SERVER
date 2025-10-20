@@ -1,16 +1,62 @@
-import { createPatientInput } from "./user.interface";
 import bcrypt from "bcryptjs";
 import { prisma } from "../../../config/db";
 import { Request } from "express";
 import uploadToCloudinary from "../../utils/cloudinary";
 import { Doctor } from "@prisma/client";
+import { pick } from "../../utils/pick";
 
-const getAllUsers = async () => {
-  const result = await prisma.user.findMany();
+const getAllUsers = async (query: Record<string, string>) => {
+  console.log(query);
+  const {
+    page = 1,
+    limit = 10,
+    sortBy = "createdAt",
+    sortOrder = "asc",
+  } = pick(query, ["page", "limit", "sortBy", "sortOrder"]) as Record<
+    string,
+    any
+  >;
+  const { searchTerm, role, status } = pick(query, [
+    "searchTerm",
+    "role",
+    "status",
+  ]) as Record<string, any>;
 
-  const totalUser = await prisma.user.count();
+  let whereAndFields: any = {};
+  if (searchTerm) {
+    whereAndFields.OR = [
+      { email: { contains: searchTerm, mode: "insensitive" } },
+    ];
+  }
+  if (role) {
+    whereAndFields.role = role;
+  }
+  if (status) {
+    whereAndFields.status = status;
+  }
 
-  return { data: result, meta: { total: totalUser } };
+  const result = await prisma.user.findMany({
+    where: whereAndFields,
+    skip: (Number(page) - 1) * Number(limit),
+    take: Number(limit),
+    orderBy: {
+      [sortBy]: sortOrder,
+    },
+  });
+
+  const totalUser = await prisma.user.count({
+    where: whereAndFields,
+    skip: (Number(page) - 1) * Number(limit),
+    take: Number(limit),
+    orderBy: {
+      [sortBy]: sortOrder,
+    },
+  });
+
+  return {
+    data: result,
+    meta: { total: totalUser, page, limit: Number(limit) },
+  };
 };
 
 const createPatient = async (req: Request) => {
