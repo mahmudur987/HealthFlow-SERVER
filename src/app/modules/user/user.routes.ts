@@ -1,7 +1,11 @@
 import { Router } from "express";
 import { userController } from "./user.controller";
 import validateRequest from "../../middlewares/validateRequest";
-import { cretePatientZodSchema } from "./user.validate";
+import {
+  createAdminZodSchema,
+  creteDoctorZodSchema,
+  cretePatientZodSchema,
+} from "./user.validate";
 import { multerUpload } from "../../utils/multer";
 
 const router = Router();
@@ -11,6 +15,18 @@ router.post(
   multerUpload.single("file"),
   validateRequest(cretePatientZodSchema),
   userController.createPatient
+);
+router.post(
+  "/create-doctor",
+  multerUpload.single("file"),
+  validateRequest(creteDoctorZodSchema),
+  userController.createDoctor
+);
+router.post(
+  "/create-admin",
+  multerUpload.single("file"),
+  validateRequest(createAdminZodSchema),
+  userController.createAdmin
 );
 router.get("/all-patients", userController.getAllPatients);
 

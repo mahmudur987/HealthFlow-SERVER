@@ -14,18 +14,20 @@ const getAllUsers = async () => {
 };
 
 const createPatient = async (req: Request) => {
+  // console.log(req.body);
+  // console.log(req.file);
   const {
     patient: { name, email },
     password,
   } = req.body;
+
+  if (!name || !email || !password) {
+    throw new Error("name, email and password are required");
+  }
   if (req.file) {
     const imageUploadResult = await uploadToCloudinary(req.file);
     console.log(imageUploadResult);
     req.body = { ...req.body, image: imageUploadResult?.secure_url };
-  }
-
-  if (!name || !email || !password) {
-    throw new Error("name, email and password are required");
   }
   const hashedPassword = await bcrypt.hash(password, 10);
   const result = await prisma.$transaction(async (tx) => {
@@ -46,6 +48,11 @@ const createPatient = async (req: Request) => {
 
     return patient;
   });
+  return result;
+};
+
+const getAllPatients = async () => {
+  const result = await prisma.patient.findMany();
   return result;
 };
 
@@ -113,6 +120,7 @@ const createDoctor = async (req: Request) => {
       data: {
         email,
         password: hashedPassword,
+        role: "DOCTOR",
       },
     });
 
@@ -125,9 +133,44 @@ const createDoctor = async (req: Request) => {
   return result;
 };
 
-const getAllPatients = async () => {
-  const result = await prisma.patient.findMany();
+const createAdmin = async (req: Request) => {
+  const {
+    admin: { name, email, contactNumber },
+    password,
+  } = req.body;
+
+  if (!name || !email || !contactNumber || !password) {
+    throw new Error("name, email, contactNumber and password are required");
+  }
+
+  if (req.file) {
+    const imageUploadResult = await uploadToCloudinary(req.file);
+    console.log(imageUploadResult);
+    req.body = { ...req.body, profilePhoto: imageUploadResult?.secure_url };
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const result = await prisma.$transaction(async (tx) => {
+    const user = await tx.user.create({
+      data: {
+        email,
+        password: hashedPassword,
+        role: "ADMIN",
+      },
+    });
+    const adminCreate = await tx.admin.create({
+      data: { name, email, contactNumber, profilePhoto: req.body.profilePhoto },
+    });
+
+    return adminCreate;
+  });
   return result;
 };
 
-export const userService = { createPatient, getAllPatients, getAllUsers };
+export const userService = {
+  createPatient,
+  getAllPatients,
+  getAllUsers,
+  createDoctor,
+  createAdmin,
+};

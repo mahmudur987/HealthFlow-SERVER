@@ -20,7 +20,25 @@ const createPatient = catchAsync(async (req: Request, res: Response) => {
     statusCode: 200,
     success: true,
     message: "Patient created successfully",
-    data: "result",
+    data: result,
+  });
+});
+const createDoctor = catchAsync(async (req: Request, res: Response) => {
+  const result = await userService.createDoctor(req);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Doctor created successfully",
+    data: result,
+  });
+});
+const createAdmin = catchAsync(async (req: Request, res: Response) => {
+  const result = await userService.createAdmin(req);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Admin created successfully",
+    data: result,
   });
 });
 
@@ -34,4 +52,10 @@ const getAllPatients = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const userController = { createPatient, getAllPatients, getAllUsers };
+export const userController = {
+  createPatient,
+  getAllPatients,
+  getAllUsers,
+  createDoctor,
+  createAdmin,
+};
