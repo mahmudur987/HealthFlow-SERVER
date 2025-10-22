@@ -1,10 +1,13 @@
 import jwt from "jsonwebtoken";
+import config from "../../config";
 
 export const generateToken = (payload: any) => {
-  const secretKey = process.env.JWT_SECRET_KE || "secret";
-  const expiresIn = process.env.JWT_EXPIRES_IN || "1d";
-  const accessToken = jwt.sign(payload, secretKey, { expiresIn: expiresIn });
-  const refreshToken = jwt.sign(payload, secretKey, { expiresIn: "30d" });
+  const accessToken = jwt.sign(payload, config.jwt_secret_key || "secret", {
+    expiresIn: config.jwt_expires_in || "1d",
+  });
+  const refreshToken = jwt.sign(payload, config.jwt_refresh_key || "secret", {
+    expiresIn: config.jwt_refresh_expires_in || "30d",
+  });
   return { accessToken, refreshToken };
 };
 

@@ -7,9 +7,11 @@ import {
   cretePatientZodSchema,
 } from "./user.validate";
 import { multerUpload } from "../../utils/multer";
+import { CheckRole } from "../../middlewares/verifyAuth";
+import { UserRole } from "@prisma/client";
 
 const router = Router();
-router.get("/all-users", userController.getAllUsers);
+router.get("/all-users", CheckRole(UserRole.ADMIN), userController.getAllUsers);
 router.post(
   "/create-patient",
   multerUpload.single("file"),
