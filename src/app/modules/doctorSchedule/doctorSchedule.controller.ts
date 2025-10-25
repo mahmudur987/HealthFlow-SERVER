@@ -20,6 +20,33 @@ const insertIntoDB = catchAsync(
   }
 );
 
+const getAllSchedulesOfDoctor = catchAsync(
+  async (req: Request & { user?: IJWTPayload }, res: Response) => {
+    const user = req.user;
+    const result = await DoctorScheduleService.getAllSchedulesOfDoctor(
+      user as IJWTPayload,
+      req.query as Record<string, string>
+    );
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Schedules fetched successfully",
+      meta: result.meta as Record<string, number>,
+      data: result.data,
+    });
+  }
+);
+const deleteScheduleFromDB = catchAsync(async (req: Request, res: Response) => {
+  const result = await DoctorScheduleService.deleteScheduleFromDB(req.query);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Schedule deleted successfully",
+    data: result,
+  });
+});
 export const DoctorScheduleController = {
   insertIntoDB,
+  getAllSchedulesOfDoctor,
+  deleteScheduleFromDB,
 };

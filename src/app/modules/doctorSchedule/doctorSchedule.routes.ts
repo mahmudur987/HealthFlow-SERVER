@@ -11,5 +11,14 @@ router.post(
   CheckRole(UserRole.DOCTOR),
   DoctorScheduleController.insertIntoDB
 );
-
+router.get(
+  "/",
+  CheckRole(UserRole.DOCTOR),
+  DoctorScheduleController.getAllSchedulesOfDoctor
+);
+router.delete(
+  "/delete",
+  CheckRole(UserRole.DOCTOR),
+  DoctorScheduleController.deleteScheduleFromDB
+);
 export const doctorScheduleRoutes = router;
