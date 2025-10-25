@@ -17,7 +17,6 @@ export const CheckRole =
         token,
         config.jwt_secret_key || "secret"
       ) as jwt.JwtPayload;
-      console.log(tokenVerify);
       if (!tokenVerify) {
         throw new Error("Admin verification failed for token");
       }
