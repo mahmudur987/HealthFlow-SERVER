@@ -13,8 +13,8 @@ const insertScheduleIntoDB = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const getSchedules = catchAsync(async (req: Request, res: Response) => {
-  const result = await scheduleService.getSchedules();
+const getDoctorSchedules = catchAsync(async (req: Request, res: Response) => {
+  const result = await scheduleService.getDoctorSchedules(req.query, req.user);
   sendResponse(res, {
     statusCode: 200,
     success: true,
@@ -23,5 +23,18 @@ const getSchedules = catchAsync(async (req: Request, res: Response) => {
     data: result.data,
   });
 });
+const deleteScheduleFromDB = catchAsync(async (req: Request, res: Response) => {
+  const result = await scheduleService.deleteScheduleFromDB(req.params.id);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Schedule deleted successfully",
+    data: result,
+  });
+});
 
-export const scheduleController = { insertScheduleIntoDB, getSchedules };
+export const scheduleController = {
+  insertScheduleIntoDB,
+  getDoctorSchedules,
+  deleteScheduleFromDB,
+};
